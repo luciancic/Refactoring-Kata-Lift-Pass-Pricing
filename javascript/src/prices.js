@@ -13,6 +13,7 @@ async function createApp() {
                 .withDatabase("lift_pass")
                 .withRootPassword('password')
                 .withBindMounts([{source: filePath, target: "/docker-entrypoint-initdb.d"}])
+                .withReuse()
                 .start()
             const port = container.getMappedPort(3306);
             const host = container.getHost();
