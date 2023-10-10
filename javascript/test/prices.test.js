@@ -12,7 +12,7 @@ describe('prices', () => {
     });
 
     afterEach(function () {
-        connection.close()
+        connection.end()
     });
 
     it('does something', async () => {
