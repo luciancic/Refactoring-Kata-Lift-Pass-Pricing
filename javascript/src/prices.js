@@ -17,7 +17,6 @@ async function createApp() {
                 .start()
             const port = container.getMappedPort(3306);
             const host = container.getHost();
-            console.info(`started test container on ${host}:${port}`)
             const  connectionOptions = {
                 host,
                 port,
