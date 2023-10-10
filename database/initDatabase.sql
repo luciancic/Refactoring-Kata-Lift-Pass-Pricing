@@ -1,5 +1,5 @@
-DROP database IF EXISTS `lift_pass`;
-CREATE database `lift_pass`;
+DROP DATABASE IF EXISTS `lift_pass`;
+CREATE DATABASE `lift_pass`;
 USE `lift_pass`;
 
 CREATE TABLE IF NOT EXISTS lift_pass.base_price (

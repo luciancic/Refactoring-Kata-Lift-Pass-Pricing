@@ -4,8 +4,43 @@ const mysql = require('mysql2/promise')
 async function createApp() {
     const app = express()
 
-    let connectionOptions = {host: 'localhost', user: 'root', database: 'lift_pass', password: 'mysql'}
-    const connection = await mysql.createConnection(connectionOptions)
+    let connection;
+    try {
+        if (process.env.NODE_ENV === 'test') {
+            const {MySqlContainer} = require("@testcontainers/mysql")
+            const filePath = require('path').resolve(__dirname, '../../database')
+            let container = await new MySqlContainer("mysql:8.0.31")
+                .withDatabase("lift_pass")
+                .withRootPassword('password')
+                .withBindMounts([{source: filePath, target: "/docker-entrypoint-initdb.d"}])
+                .start()
+            const port = container.getMappedPort(3306);
+            const host = container.getHost();
+            console.info(`started test container on ${host}:${port}`)
+            const  connectionOptions = {
+                host,
+                port,
+                user: 'root',
+                password: 'password',
+                database: 'lift_pass'
+            }
+            connection = await mysql.createConnection(connectionOptions);
+        } else {
+            require('dotenv').config();
+
+            let connectionOptions = {
+                host: 'localhost',
+                user: process.env.DB_USER,
+                database: process.env.DB_DATABASE,
+                password: process.env.DB_PASSWORD
+            };
+
+            connection = await mysql.createConnection(connectionOptions);
+        }
+    } catch (error) {
+        console.error("Failed to start DB", error);
+        throw error;
+    }
 
     app.put('/prices', async (req, res) => {
         const liftPassCost = req.query.cost
